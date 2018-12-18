@@ -12,6 +12,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using RestSharp;
@@ -34,6 +35,9 @@ namespace Org.OpenAPITools.Test
     public class PetApiTests
     {
         private PetApi instance;
+        private long petId = 130130;
+        private const string apiKey = "test key";
+        private const string baseUrl = "http://petstore.swagger.io/v2/";
 
         /// <summary>
         /// Setup before each unit test
@@ -41,16 +45,66 @@ namespace Org.OpenAPITools.Test
         [SetUp]
         public void Init()
         {
-            instance = new PetApi();
+            instance = new PetApi(baseUrl);
+            
+            // create pet
+            Pet p = createPet();
+            try
+            {
+                instance.DeletePet(petId, apiKey);
+            }
+            catch (Exception e)
+            {
+                // ignore
+            }
+            var info = instance.AddPetWithHttpInfo(p);
+            Console.WriteLine(info.ToString());
         }
 
+        
+        /// <summary>
+        /// Create a Pet object
+        /// </summary>
+        private Pet createPet()
+        {
+            // create pet
+            Pet p = new Pet(name: "Csharp test", photoUrls: new List<string> { "http://petstore.com/csharp_test" });
+            p.Id = petId;
+            //p.Name = "Csharp test";
+            p.Status = Pet.StatusEnum.Available;
+            // create Category object
+            Category category = new Category();
+            category.Id = 56;
+            category.Name = "sample category name2";
+            List<String> photoUrls = new List<String>(new String[] { "sample photoUrls" });
+            // create Tag object
+            Tag tag = new Tag();
+            tag.Id = petId;
+            tag.Name = "csharp sample tag name1";
+            List<Tag> tags = new List<Tag>(new Tag[] { tag });
+            p.Tags = tags;
+            p.Category = category;
+            p.PhotoUrls = photoUrls;
+
+            return p;
+        }
+        
         /// <summary>
         /// Clean up after each unit test
         /// </summary>
         [TearDown]
         public void Cleanup()
         {
-
+            try
+            {
+                instance.DeletePet(petId, apiKey);
+            }
+            catch (Exception e)
+            {
+                // ignore
+            }
+            
+            instance = null;
         }
 
         /// <summary>
@@ -119,10 +173,28 @@ namespace Org.OpenAPITools.Test
         [Test]
         public void GetPetByIdTest()
         {
-            // TODO uncomment below to test the method and replace null with proper value
-            //long? petId = null;
-            //var response = instance.GetPetById(petId);
-            //Assert.IsInstanceOf<Pet> (response, "response is Pet");
+            // set timeout to 10 seconds
+            Configuration c1 = new Configuration();
+            c1.Timeout = 10000;
+            c1.UserAgent = "TEST_USER_AGENT";
+
+            PetApi petApi = new PetApi(c1);
+            Pet response = petApi.GetPetById(petId);
+            Assert.IsInstanceOf<Pet>(response);
+
+            Assert.AreEqual("Csharp test", response.Name);
+            Assert.AreEqual(Pet.StatusEnum.Available, response.Status);
+
+            Assert.IsInstanceOf<List<Tag>>(response.Tags);
+            Assert.AreEqual(petId, response.Tags[0].Id);
+            Assert.AreEqual("csharp sample tag name1", response.Tags[0].Name);
+
+            Assert.IsInstanceOf<List<String>>(response.PhotoUrls);
+            Assert.AreEqual("sample photoUrls", response.PhotoUrls[0]);
+
+            Assert.IsInstanceOf<Category>(response.Category);
+            Assert.AreEqual(56, response.Category.Id);
+            Assert.AreEqual("sample category name2", response.Category.Name);
         }
         
         /// <summary>

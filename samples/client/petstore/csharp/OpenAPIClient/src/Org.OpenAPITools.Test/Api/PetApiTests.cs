@@ -26,6 +26,7 @@ namespace Org.OpenAPITools.Test
 		private PetApi instance;
 
 		private long petId = 11088;
+		private const string apiKey = "test key";
 
 		/// <summary>
 		/// Create a Pet object
@@ -77,6 +78,14 @@ namespace Org.OpenAPITools.Test
 
 			// add pet before testing
 			PetApi petApi = new PetApi("http://petstore.swagger.io/v2/");
+			try
+			{
+				petApi.DeletePet(petId, apiKey);
+			}
+			catch (Exception e)
+			{
+				// ignore
+			}
 			petApi.AddPet(p);
 		}
 
@@ -88,7 +97,7 @@ namespace Org.OpenAPITools.Test
 		{
 			// remove the pet after testing
 			PetApi petApi = new PetApi();
-			petApi.DeletePet(petId, "test key");
+			petApi.DeletePet(petId, apiKey);
 		}
 
 		/// <summary>

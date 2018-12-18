@@ -592,9 +592,9 @@ namespace Org.OpenAPITools.Api
             // to determine the Accept header
             String[] @accepts = new String[] {
             };
-            
-            foreach (var contentType in @contentTypes)
-                requestOptions.HeaderParameters.Add("Content-Type", contentType);
+
+            var conentType = @contentTypes.FirstOrDefault();
+            if(conentType != null) requestOptions.HeaderParameters.Add("Content-Type", conentType);
             
             foreach (var accept in @accepts)
                 requestOptions.HeaderParameters.Add("Accept", accept);
