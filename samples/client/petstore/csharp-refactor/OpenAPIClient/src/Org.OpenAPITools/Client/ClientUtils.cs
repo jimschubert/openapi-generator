@@ -106,20 +106,8 @@ namespace Org.OpenAPITools.Client
                 return ((DateTimeOffset)obj).ToString((configuration ?? GlobalConfiguration.Instance).DateTimeFormat);
             else
             {
-                if (obj is IList)
-                {
-                    var list = obj as IList;
-                    var flattenedString = new StringBuilder();
-                    foreach (var param in list)
-                    {
-                        if (flattenedString.Length > 0)
-                            flattenedString.Append(",");
-                        flattenedString.Append(param);
-                    }
-                    return flattenedString.ToString();
-                }
-                
-                return Convert.ToString (obj);
+                var list = obj as IList;
+                return list != null ? String.Join(",", list) : Convert.ToString (obj);
             }
         }
         
@@ -130,7 +118,7 @@ namespace Org.OpenAPITools.Client
         /// <returns>True if object is a collection type</returns>
         private static bool IsCollection(object value)
         {
-            return value is IList || value is ICollection;
+            return !(value is IEnumerable<char>) && (value is IList || value is ICollection || value is IEnumerable);
         }
         
         /// <summary>

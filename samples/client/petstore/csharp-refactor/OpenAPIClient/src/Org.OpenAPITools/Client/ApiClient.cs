@@ -340,6 +340,11 @@ namespace Org.OpenAPITools.Client
             return request;
         }
 
+        private static bool IsNonStringCollection(object value)
+        {
+            return !(value is IEnumerable<char>) && value is IEnumerable;
+        }
+
         private ApiResponse<T> toApiResponse<T>(IRestResponse<T> response)
         {
             T result = response.Data;
@@ -353,7 +358,15 @@ namespace Org.OpenAPITools.Client
             {
                 foreach (var responseHeader in response.Headers)
                 {
-                    transformed.Headers.Add(responseHeader.Name, ClientUtils.ParameterToString(responseHeader.Value));
+                    if (IsNonStringCollection(responseHeader.Value))
+                    {
+                        foreach (var header in (IEnumerable) responseHeader.Value)
+                            transformed.Headers.Add(responseHeader.Name, ClientUtils.ParameterToString(header));
+                    }
+                    else
+                    {
+                        transformed.Headers.Add(responseHeader.Name, ClientUtils.ParameterToString(responseHeader.Value));
+                    }
                 }
             }
 
