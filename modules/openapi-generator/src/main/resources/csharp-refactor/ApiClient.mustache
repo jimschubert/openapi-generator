@@ -343,6 +343,11 @@ namespace {{packageName}}.Client
             return request;
         }
 
+        private static bool IsNonStringCollection(object value)
+        {
+            return !(value is IEnumerable<char>) && value is IEnumerable;
+        }
+
         private ApiResponse<T> toApiResponse<T>({{#supportsAsync}}IRestResponse<T> response{{/supportsAsync}}{{^supportsAsync}}IRestResponse response, CustomJsonCodec des{{/supportsAsync}})
         {
             T result = {{#supportsAsync}}response.Data{{/supportsAsync}}{{^supportsAsync}}(T)des.Deserialize(response, typeof(T)){{/supportsAsync}};
@@ -356,7 +361,15 @@ namespace {{packageName}}.Client
             {
                 foreach (var responseHeader in response.Headers)
                 {
-                    transformed.Headers.Add(responseHeader.Name, ClientUtils.ParameterToString(responseHeader.Value));
+                    if (IsNonStringCollection(responseHeader.Value))
+                    {
+                        foreach (var header in (IEnumerable) responseHeader.Value)
+                            transformed.Headers.Add(responseHeader.Name, ClientUtils.ParameterToString(header));
+                    }
+                    else
+                    {
+                        transformed.Headers.Add(responseHeader.Name, ClientUtils.ParameterToString(responseHeader.Value));
+                    }
                 }
             }
 
