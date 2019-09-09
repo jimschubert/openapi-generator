@@ -1,3 +1,13 @@
+<style>
+.no-select{
+-webkit-touch-callout: none;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+</style>
 <h1 align="center">OpenAPI Generator</h1>
 
 <div align="center">
@@ -803,40 +813,40 @@ If you want to join the committee, please kindly apply by sending an email to te
 | Languages    | Member (join date) |
 |:-------------|:-------------|
 | ActionScript |      |
-| Ada       | @stcarrez (2018/02) @micheleISEP (2018/02) |
-| Android   | @jaz-ah (2017/09) |
+| Ada       | @stcarrez <span class="no-select">(2018/02)</span> @micheleISEP <span class="no-select">(2018/02)</span> |
+| Android   | @jaz-ah <span class="no-select">(2017/09)</span> |
 | Apex      |  |
-| Bash      | @frol (2017/07) @bkryza (2017/08) @kenjones-cisco (2017/09) |
-| C         | @zhemant (2018/11) |
-| C++       | @ravinikam (2017/07) @stkrwork (2017/07) @etherealjoy (2018/02) @martindelille (2018/03) @muttleyxd (2019/08) |
-| C#        | @mandrean (2017/08), @jimschubert (2017/09) [:heart:](https://www.patreon.com/jimschubert) |
+| Bash      | @frol <span class="no-select">(2017/07)</span> @bkryza <span class="no-select">(2017/08)</span> @kenjones-cisco <span class="no-select">(2017/09)</span> |
+| C         | @zhemant <span class="no-select">(2018/11)</span> |
+| C++       | @ravinikam <span class="no-select">(2017/07)</span> @stkrwork <span class="no-select">(2017/07)</span> @etherealjoy <span class="no-select">(2018/02)</span> @martindelille <span class="no-select">(2018/03)</span> @muttleyxd <span class="no-select">(2019/08)</span> |
+| C#        | @mandrean <span class="no-select">(2017/08)</span>, @jimschubert <span class="no-select">(2017/09)</span> |
 | Clojure   |  |
-| Dart      | @ircecho (2017/07) @swipesight (2018/09) @jaumard (2018/09) @nickmeinhold (2019/09)  |
-| Eiffel    | @jvelilla (2017/09) |
-| Elixir    | @mrmstn (2018/12) |
-| Elm       | @eriktim (2018/09) |
-| Erlang    | @tsloughter (2017/11) @jfacorro (2018/10) @robertoaloi (2018/10) |
-| F#        | @nmfisher (2019/05) |
-| Go        | @antihax (2017/11) @bvwells (2017/12) @grokify (2018/07) @kemokemo (2018/09) @bkabrda (2019/07) |
-| GraphQL   | @renepardon (2018/12) |
+| Dart      | @ircecho <span class="no-select">(2017/07)</span> @swipesight <span class="no-select">(2018/09)</span> @jaumard <span class="no-select">(2018/09)</span> @nickmeinhold <span class="no-select">(2019/09)</span>  |
+| Eiffel    | @jvelilla <span class="no-select">(2017/09)</span> |
+| Elixir    | @mrmstn <span class="no-select">(2018/12)</span> |
+| Elm       | @eriktim <span class="no-select">(2018/09)</span> |
+| Erlang    | @tsloughter <span class="no-select">(2017/11)</span> @jfacorro <span class="no-select">(2018/10)</span> @robertoaloi <span class="no-select">(2018/10)</span> |
+| F#        | @nmfisher <span class="no-select">(2019/05)</span> |
+| Go        | @antihax <span class="no-select">(2017/11)</span> @bvwells <span class="no-select">(2017/12)</span> @grokify <span class="no-select">(2018/07)</span> @kemokemo <span class="no-select">(2018/09)</span> @bkabrda <span class="no-select">(2019/07)</span> |
+| GraphQL   | @renepardon <span class="no-select">(2018/12)</span> |
 | Groovy    |  |
 | Haskell   |  |
-| Java      | @bbdouglas (2017/07) @sreeshas (2017/08) @jfiala (2017/08) @lukoyanov (2017/09) @cbornet (2017/09) @jeff9finger (2018/01) @karismann (2019/03) @Zomzog (2019/04) |
-| Kotlin    | @jimschubert (2017/09) [:heart:](https://www.patreon.com/jimschubert), @dr4ke616 (2018/08) @karismann (2019/03) @Zomzog (2019/04) |
-| Lua       | @daurnimator (2017/08) |
-| NodeJS/Javascript | @CodeNinjai (2017/07) @frol (2017/07) @cliffano (2017/07) |
+| Java      | @bbdouglas <span class="no-select">(2017/07)</span> @sreeshas <span class="no-select">(2017/08)</span> @jfiala <span class="no-select">(2017/08)</span> @lukoyanov <span class="no-select">(2017/09)</span> @cbornet <span class="no-select">(2017/09)</span> @jeff9finger <span class="no-select">(2018/01)</span> @karismann <span class="no-select">(2019/03)</span> @Zomzog <span class="no-select">(2019/04)</span> |
+| Kotlin    | @jimschubert <span class="no-select">(2017/09)</span>, @dr4ke616 <span class="no-select">(2018/08)</span> @karismann <span class="no-select">(2019/03)</span> @Zomzog <span class="no-select">(2019/04)</span> |
+| Lua       | @daurnimator <span class="no-select">(2017/08)</span> |
+| NodeJS/Javascript | @CodeNinjai <span class="no-select">(2017/07)</span> @frol <span class="no-select">(2017/07)</span> @cliffano <span class="no-select">(2017/07)</span> |
 | ObjC      |  |
-| OCaml     | @cgensoul (2019/08) |
-| Perl      | @wing328 (2017/07) [:heart:](https://www.patreon.com/wing328) @yue9944882 (2019/06) |
-| PHP       | @jebentier (2017/07), @dkarlovi (2017/07), @mandrean (2017/08), @jfastnacht (2017/09), @ackintosh (2017/09) [:heart:](https://www.patreon.com/ackintosh/overview), @ybelenko (2018/07), @renepardon (2018/12) |
+| OCaml     | @cgensoul <span class="no-select">(2019/08)</span> |
+| Perl      | @wing328 <span class="no-select">(2017/07)</span> [:heart:](https://www.patreon.com/wing328) @yue9944882 <span class="no-select">(2019/06)</span> |
+| PHP       | @jebentier <span class="no-select">(2017/07)</span>, @dkarlovi <span class="no-select">(2017/07)</span>, @mandrean <span class="no-select">(2017/08)</span>, @jfastnacht <span class="no-select">(2017/09)</span>, @ackintosh <span class="no-select">(2017/09)</span> [:heart:](https://www.patreon.com/ackintosh/overview), @ybelenko <span class="no-select">(2018/07)</span>, @renepardon <span class="no-select">(2018/12)</span> |
 | PowerShell | |
-| Python    | @taxpon (2017/07) @frol (2017/07) @mbohlool (2017/07) @cbornet (2017/09) @kenjones-cisco (2017/11) @tomplus (2018/10) @Jyhess (2019/01) |
-| R         | @Ramanth (2019/07) @saigiridhar21 (2019/07) |
-| Ruby      | @cliffano (2017/07) @zlx (2017/09) @autopp (2019/02) |
-| Rust      | @frol (2017/07) @farcaller (2017/08) @bjgill (2017/12) @richardwhiuk (2019/07) |
-| Scala     | @clasnake (2017/07), @jimschubert (2017/09) [:heart:](https://www.patreon.com/jimschubert), @shijinkui  (2018/01), @ramzimaalej (2018/03) |
-| Swift     | @jgavris (2017/07) @ehyche (2017/08) @Edubits (2017/09) @jaz-ah (2017/09) @d-date  (2018/03) |
-| TypeScript | @TiFu (2017/07) @taxpon (2017/07) @sebastianhaas (2017/07) @kenisteward (2017/07) @Vrolijkx (2017/09) @macjohnny (2018/01) @nicokoenig (2018/09) @topce (2018/10) @akehir (2019/07) |
+| Python    | @taxpon <span class="no-select">(2017/07)</span> @frol <span class="no-select">(2017/07)</span> @mbohlool <span class="no-select">(2017/07)</span> @cbornet <span class="no-select">(2017/09)</span> @kenjones-cisco <span class="no-select">(2017/11)</span> @tomplus <span class="no-select">(2018/10)</span> @Jyhess <span class="no-select">(2019/01)</span> |
+| R         | @Ramanth <span class="no-select">(2019/07)</span> @saigiridhar21 <span class="no-select">(2019/07)</span> |
+| Ruby      | @cliffano <span class="no-select">(2017/07)</span> @zlx <span class="no-select">(2017/09)</span> @autopp <span class="no-select">(2019/02)</span> |
+| Rust      | @frol <span class="no-select">(2017/07)</span> @farcaller <span class="no-select">(2017/08)</span> @bjgill <span class="no-select">(2017/12)</span> @richardwhiuk <span class="no-select">(2019/07)</span> |
+| Scala     | @clasnake <span class="no-select">(2017/07)</span>, @jimschubert <span class="no-select">(2017/09)</span>, @shijinkui <span class="no-select">(2018/01)</span>, @ramzimaalej <span class="no-select">(2018/03)</span> |
+| Swift     | @jgavris <span class="no-select">(2017/07)</span> @ehyche <span class="no-select">(2017/08)</span> @Edubits <span class="no-select">(2017/09)</span> @jaz-ah <span class="no-select">(2017/09)</span> @d-date  <span class="no-select">(2018/03)</span> |
+| TypeScript | @TiFu <span class="no-select">(2017/07)</span> @taxpon <span class="no-select">(2017/07)</span> @sebastianhaas <span class="no-select">(2017/07)</span> @kenisteward <span class="no-select">(2017/07)</span> @Vrolijkx <span class="no-select">(2017/09)</span> @macjohnny <span class="no-select">(2018/01)</span> @nicokoenig <span class="no-select">(2018/09)</span> @topce <span class="no-select">(2018/10)</span> @akehir <span class="no-select">(2019/07)</span> |
 
 :heart: = Link to support the contributor directly
 
