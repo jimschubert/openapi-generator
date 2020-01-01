@@ -1793,7 +1793,7 @@ public class DefaultCodegen implements CodegenConfig {
 
     /**
      * Return a string representation of the schema type, resolving aliasing and references if necessary.
-     * 
+     *
      * @param schema
      * @return the string representation of the schema type.
      */
@@ -2267,35 +2267,240 @@ public class DefaultCodegen implements CodegenConfig {
         return m;
     }
 
+    /**
+     * Recursively look in Schema sc for the discriminator discPropName
+     * @param sc The Schema that may contain the discriminator
+     * @param discPropName The String that is the discriminator propertyName in the schema
+     */
+    private boolean discriminatorFound(Schema sc, String discPropName) {
+        Schema refSchema = ModelUtils.getReferencedSchema(this.openAPI, sc);
+        if (refSchema.getProperties() != null) {
+            Schema discSchema = (Schema) refSchema.getProperties().get(discPropName);
+            if (discSchema != null && ModelUtils.isStringSchema(discSchema)) {
+                return true;
+            }
+        }
+        if (ModelUtils.isComposedSchema(refSchema)) {
+            ComposedSchema composedSchema = (ComposedSchema) refSchema;
+            if (composedSchema.getAllOf() != null) {
+                // If our discriminator is in one of the allOf schemas break when we find it
+                for  (Schema allOf: composedSchema.getAllOf()) {
+                    if (discriminatorFound(allOf, discPropName)) {
+                        return true;
+                    }
+                }
+            }
+            if (composedSchema.getOneOf() != null && composedSchema.getOneOf().size() != 0) {
+                // All oneOf definitions must contain the discriminator
+                Integer hasDiscriminatorCnt = 0;
+                for  (Schema oneOf: composedSchema.getOneOf()) {
+                    if (discriminatorFound(oneOf, discPropName)) {
+                        hasDiscriminatorCnt++;
+                    }
+                }
+                if (hasDiscriminatorCnt == composedSchema.getOneOf().size()) {
+                    return true;
+                }
+            }
+            if (composedSchema.getAnyOf() != null && composedSchema.getAnyOf().size() != 0) {
+                // All anyOf definitions must contain the discriminator because a min of one must be selected
+                Integer hasDiscriminatorCnt = 0;
+                for  (Schema anyOf: composedSchema.getAnyOf()) {
+                    if (discriminatorFound(anyOf, discPropName)) {
+                        hasDiscriminatorCnt++;
+                    }
+                }
+                if (hasDiscriminatorCnt == composedSchema.getAnyOf().size()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Recursively look in Schema sc for the discriminator and return it
+     * @param sc The Schema that may contain the discriminator
+     */
+    private Discriminator recursiveGetDiscriminator(Schema sc) {
+        Schema refSchema = ModelUtils.getReferencedSchema(this.openAPI, sc);
+        Discriminator disc = refSchema.getDiscriminator();
+        if (disc != null) {
+            return disc;
+        }
+        if (ModelUtils.isComposedSchema(refSchema)) {
+            ComposedSchema composedSchema = (ComposedSchema) refSchema;
+            if (composedSchema.getAllOf() != null) {
+                // If our discriminator is in one of the allOf schemas break when we find it
+                for  (Schema allOf: composedSchema.getAllOf()) {
+                    disc = recursiveGetDiscriminator(allOf);
+                    if (disc != null) {
+                        // empty out the map because we are returning the discriminator to a different schema
+                        disc.setMapping(new HashMap<>());
+                        return disc;
+                    }
+                }
+            }
+            if (composedSchema.getOneOf() != null && composedSchema.getOneOf().size() != 0) {
+                // All oneOf definitions must contain the discriminator
+                Integer hasDiscriminatorCnt = 0;
+                Set<String> discriminatorsPropNames = new HashSet<>();
+                for  (Schema oneOf: composedSchema.getOneOf()) {
+                    disc = recursiveGetDiscriminator(oneOf);
+                    if (disc != null) {
+                        discriminatorsPropNames.add(disc.getPropertyName());
+                        hasDiscriminatorCnt++;
+                    }
+                }
+                if (hasDiscriminatorCnt == composedSchema.getOneOf().size() && discriminatorsPropNames.size() == 1) {
+                    // empty out the map because we are returning the discriminator to a different schema
+                    disc.setMapping(new HashMap<>());
+                    return disc;
+                }
+            }
+            if (composedSchema.getAnyOf() != null && composedSchema.getAnyOf().size() != 0) {
+                // All anyOf definitions must contain the discriminator because a min of one must be selected
+                Integer hasDiscriminatorCnt = 0;
+                Set<String> discriminatorsPropNames = new HashSet<>();
+                for  (Schema anyOf: composedSchema.getAnyOf()) {
+                    disc = recursiveGetDiscriminator(anyOf);
+                    if (disc != null) {
+                        discriminatorsPropNames.add(disc.getPropertyName());
+                        hasDiscriminatorCnt++;
+                    }
+                }
+                if (hasDiscriminatorCnt == composedSchema.getAnyOf().size() && discriminatorsPropNames.size() == 1) {
+                    // empty out the map because we are returning the discriminator to a different schema
+                    disc.setMapping(new HashMap<>());
+                    return disc;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This function is only used for composed schemas which have a discriminator
+     * Process oneOf and anyOf models in a composed schema and adds them into
+     * a list if the oneOf and anyOf models contain
+     * the required discriminator. If they don't contain the required
+     * discriminator or the discriminator is the wrong type then an error is
+     * thrown
+     * @param composedSchemaName The String model name of the composed schema where we are setting the discriminator map
+     * @param discPropName The String that is the discriminator propertyName in the schema
+     * @param c The ComposedSchema that contains the discriminator and oneOf/anyOf schemas
+     */
+    protected List<String> getOneOfAnyOfSchemaNames(String composedSchemaName, String discPropName, ComposedSchema c) {
+        ArrayList<List<Schema>> listOLists = new ArrayList<List<Schema>>();
+        listOLists.add(c.getOneOf());
+        listOLists.add(c.getAnyOf());
+        Set<String> descendentSchemas = new HashSet<>();
+        for (List<Schema> schemaList: listOLists) {
+            if (schemaList == null) {
+                continue;
+            }
+            for  (Schema sc: schemaList) {
+                String ref = sc.get$ref();
+                if (ref == null) {
+                    // for schemas with no ref, it is not possible to build the discriminator map
+                    // because ref is how we get the model name
+                    // we only hit this use case for a schema with inline composed schemas, and one of those
+                    // schemas also has inline composed schemas
+                    throw new RuntimeException("Invalid inline schema defined in oneOf/anyOf in '" + composedSchemaName + "'. Per the OpenApi spec, for this case when a composed schema defines a discriminator, the oneOf/anyOf schemas must use $ref. Change this inline definition to a $ref definition");
+                }
+                Boolean discFound = discriminatorFound(sc, discPropName);
+                String modelName = ModelUtils.getSimpleRef(ref);
+                if (discFound == false) {
+                    throw new RuntimeException("'" + composedSchemaName + "' defines discriminator '" + discPropName + "', but the referenced schema '" + modelName + "' is missing this property");
+                }
+                descendentSchemas.add(modelName);
+            }
+        }
+        List<String> modelNames = new ArrayList<>(descendentSchemas);
+        Collections.sort(modelNames);
+        return modelNames;
+    }
+
+    protected List<String> getDescendentSchemaNames(String thisSchemaName) {
+        ArrayList<String> queue = new ArrayList<String>();
+        Set<String> descendentSchemas = new HashSet<>();
+        Map<String, Schema> schemas = ModelUtils.getSchemas(this.openAPI);
+        String currentSchemaName = thisSchemaName;
+        while (true) {
+            for (String childName : schemas.keySet()) {
+                if (childName == thisSchemaName) {
+                    continue;
+                }
+                Schema child = schemas.get(childName);
+                if (ModelUtils.isComposedSchema(child)) {
+                    ComposedSchema composedChild = (ComposedSchema) child;
+                    List<Schema> parents = composedChild.getAllOf();
+                    if (parents != null) {
+                        for  (Schema parent: parents) {
+                            String ref = parent.get$ref();
+                            if (ref == null) {
+                                // for schemas with no ref, it is not possible to build the discriminator map
+                                // because ref is how we get the model name
+                                // we only hit this use case for a schema with inline composed schemas, and one of those
+                                // schemas also has inline composed schemas
+                                throw new RuntimeException("Invalid inline schema defined in allOf in '" + childName + "'. Per the OpenApi spec, for this case when a composed schema defines a discriminator, the allOf schemas must use $ref. Change this inline definition to a $ref definition");
+                            }
+                            String parentName = ModelUtils.getSimpleRef(ref);
+                            if (parentName.equals(currentSchemaName)) {
+                                if (queue.contains(childName) || descendentSchemas.contains(childName)) {
+                                    throw new RuntimeException("Stack overflow hit when looking for "+thisSchemaName+" an infinite loop starting and ending at "+childName+" was seen");
+                                }
+                                queue.add(childName);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (queue.size() == 0) {
+                break;
+            }
+            currentSchemaName = queue.remove(queue.size()-1);
+            descendentSchemas.add(currentSchemaName);
+        }
+        List<String> modelNames = new ArrayList<>(descendentSchemas);
+        Collections.sort(modelNames);
+        return modelNames;
+    }
+
     protected CodegenDiscriminator createDiscriminator(String schemaName, Schema schema) {
-        if (schema.getDiscriminator() == null) {
+        Discriminator sourceDiscriminator = recursiveGetDiscriminator(schema);
+        if (sourceDiscriminator == null) {
             return null;
         }
         CodegenDiscriminator discriminator = new CodegenDiscriminator();
-        discriminator.setPropertyName(toVarName(schema.getDiscriminator().getPropertyName()));
-        discriminator.setPropertyBaseName(schema.getDiscriminator().getPropertyName());
+        String discPropName = sourceDiscriminator.getPropertyName();
+        discriminator.setPropertyName(toVarName(discPropName));
+        discriminator.setPropertyBaseName(sourceDiscriminator.getPropertyName());
         discriminator.setPropertyGetter(toGetter(discriminator.getPropertyName()));
         // FIXME: for now, we assume that the discriminator property is String
         discriminator.setPropertyType(typeMapping.get("string"));
-        discriminator.setMapping(schema.getDiscriminator().getMapping());
-        if (schema.getDiscriminator().getMapping() != null && !schema.getDiscriminator().getMapping().isEmpty()) {
-            for (Entry<String, String> e : schema.getDiscriminator().getMapping().entrySet()) {
+        discriminator.setMapping(sourceDiscriminator.getMapping());
+        if (sourceDiscriminator.getMapping() != null && !sourceDiscriminator.getMapping().isEmpty()) {
+            for (Entry<String, String> e : sourceDiscriminator.getMapping().entrySet()) {
                 String nameOrRef = e.getValue();
                 String name = nameOrRef.indexOf('/') >= 0 ? ModelUtils.getSimpleRef(nameOrRef) : nameOrRef;
                 String modelName = toModelName(name);
                 discriminator.getMappedModels().add(new MappedModel(e.getKey(), modelName));
             }
         } else {
-            Map<String, Schema> allDefinitions = ModelUtils.getSchemas(this.openAPI);
-            allDefinitions.forEach((childName, child) -> {
-                if (child instanceof ComposedSchema && ((ComposedSchema) child).getAllOf() != null) {
-
-                    final List<String> parentSchemas = ModelUtils.getAllParentsName((ComposedSchema) child, allDefinitions, true);
-                    if (parentSchemas.contains(schemaName)) {
-                        discriminator.getMappedModels().add(new MappedModel(childName, toModelName(childName)));
-                    }
+            // for schemas that allOf inherit from this schema, add those descendents to this discriminator map
+            List<String> allOfDescendents = getDescendentSchemaNames(schemaName);
+            for (String allOfDescendent: allOfDescendents) {
+                discriminator.getMappedModels().add(new MappedModel(allOfDescendent, toModelName(allOfDescendent)));
+            }
+            // if there are composed oneOf/anyOf schemas, add them to this discriminator
+            if (ModelUtils.isComposedSchema(schema)) {
+                List<String> oneOfanyOfDescendents = getOneOfAnyOfSchemaNames(schemaName, discPropName, (ComposedSchema) schema);
+                for (String oneOfanyOfDescendent: oneOfanyOfDescendents) {
+                    discriminator.getMappedModels().add(new MappedModel(oneOfanyOfDescendent, toModelName(oneOfanyOfDescendent)));
                 }
-            });
+            }
         }
         return discriminator;
     }
@@ -2315,8 +2520,10 @@ public class DefaultCodegen implements CodegenConfig {
         if (schema instanceof ComposedSchema) {
             ComposedSchema composedSchema = (ComposedSchema) schema;
 
-            for (Schema component : composedSchema.getAllOf()) {
-                addProperties(properties, required, component);
+            if (composedSchema.getAllOf() != null) {
+                for (Schema component : composedSchema.getAllOf()) {
+                    addProperties(properties, required, component);
+                }
             }
 
             if (schema.getRequired() != null) {
@@ -2324,11 +2531,15 @@ public class DefaultCodegen implements CodegenConfig {
             }
 
             if (composedSchema.getOneOf() != null) {
-                throw new RuntimeException("Please report the issue: Cannot process oneOf (Composed Scheme) in addProperties: " + schema);
+                for (Schema component : composedSchema.getOneOf()) {
+                    addProperties(properties, required, component);
+                }
             }
 
             if (composedSchema.getAnyOf() != null) {
-                throw new RuntimeException("Please report the issue: Cannot process anyOf (Composed Schema) in addProperties: " + schema);
+                for (Schema component : composedSchema.getAnyOf()) {
+                    addProperties(properties, required, component);
+                }
             }
 
             return;
