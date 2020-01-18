@@ -64,7 +64,7 @@ public class Validate implements Runnable {
         OpenAPI specification = result.getOpenAPI();
 
         RuleConfiguration ruleConfiguration = new RuleConfiguration();
-        ruleConfiguration.setEnableRecommendations(recommend);
+        ruleConfiguration.setEnableRecommendations(recommend != null ? recommend : true);
 
         OpenApiEvaluator evaluator = new OpenApiEvaluator(ruleConfiguration);
         ValidationResult validationResult = evaluator.validate(specification);
