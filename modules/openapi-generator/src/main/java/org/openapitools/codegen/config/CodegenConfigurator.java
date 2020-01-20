@@ -448,7 +448,25 @@ public class CodegenConfigurator {
         // TODO: Support custom spec loader implementations (https://github.com/OpenAPITools/openapi-generator/issues/844)
         final List<AuthorizationValue> authorizationValues = AuthParser.parse(this.auth);
         ParseOptions options = new ParseOptions();
-        options.setResolve(true);
+
+        options.setResolveFully(Boolean.parseBoolean(System.getProperty("openapitools.swagger-parser.resolve-fully", "false")));
+        options.setResolveCombinators(Boolean.parseBoolean(System.getProperty("openapitools.swagger-parser.resolve-combinators", "true")));
+        options.setFlatten(Boolean.parseBoolean(System.getProperty("openapitools.swagger-parser.flatten", "false")));
+        options.setSkipMatches(Boolean.parseBoolean(System.getProperty("openapitools.swagger-parser.skip-matches", "false")));
+        options.setFlattenComposedSchemas(Boolean.parseBoolean(System.getProperty("openapitools.swagger-parser.flatten-composed-schemas", "false")));
+
+        if (options.isResolveFully() ||
+            !options.isResolveCombinators() ||
+            options.isFlatten() ||
+            options.isSkipMatches() ||
+            options.isFlattenComposedSchemas()) {
+            LOGGER.warn("Custom parser options detected! This may lead to unexpected or unsupported output.");
+        }
+
+        // we don't allow modification of resolve
+        // we will set this to the _opposite_ of resolve fully, to avoid double-resolution
+        options.setResolve(!options.isResolveFully());
+
         SwaggerParseResult result = new OpenAPIParser().readLocation(inputSpec, authorizationValues, options);
 
         // TODO: Move custom validations to a separate type as part of a "Workflow"
