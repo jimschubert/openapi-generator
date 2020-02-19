@@ -1,0 +1,86 @@
+openapi: 3.0.2
+info:
+  title: OAI Specification example for Polymorphism
+  version: 1.0.0
+paths:
+  /pet:
+    get:
+      responses:
+        '200':
+          description: desc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+  /reptile:
+    get:
+      responses:
+        '200':
+          description: desc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reptile'
+  /mypets:
+    get:
+      responses:
+        '200':
+          description: desc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPets'
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - petType
+      properties:
+        petType:
+          type: string
+      discriminator:
+        propertyName: petType
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          properties:
+            name:
+              type: string
+    Reptile:
+      allOf:
+        - $ref: '#/components/schemas/Pet'
+    Dog:
+      allOf:
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          properties:
+            bark:
+              type: string
+    Lizard:
+      allOf:
+        - $ref: '#/components/schemas/Reptile'
+        - type: object
+          properties:
+            lovesRocks:
+              type: boolean
+    Snake:
+      allOf:
+        - $ref: '#/components/schemas/Reptile'
+        - type: object
+          properties:
+            hasLegs:
+              type: boolean
+    MyPets:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Lizard'
+      discriminator:
+        propertyName: petType
+    MyPetsNoDisc:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Lizard'
+      # per https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#discriminatorObject
+      # this discriminator must be included to use it as a hint to pick a schema

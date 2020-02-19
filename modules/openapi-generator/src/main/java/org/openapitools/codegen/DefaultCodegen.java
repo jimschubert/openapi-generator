@@ -2320,23 +2320,26 @@ public class DefaultCodegen implements CodegenConfig {
 
     /**
      * Recursively look in Schema sc for the discriminator and return it
+     * If we return it from allOf, oneOf, or anyOf, then do not include the
+     * discriminator map from that location because it is not relevant at our
+     * Schema sc location
      * @param sc The Schema that may contain the discriminator
      */
     private Discriminator recursiveGetDiscriminator(Schema sc) {
         Schema refSchema = ModelUtils.getReferencedSchema(this.openAPI, sc);
-        Discriminator disc = refSchema.getDiscriminator();
-        if (disc != null) {
-            return disc;
+        Discriminator foundDisc = refSchema.getDiscriminator();
+        if (foundDisc != null) {
+            return foundDisc;
         }
+        Discriminator disc = new Discriminator();
         if (ModelUtils.isComposedSchema(refSchema)) {
             ComposedSchema composedSchema = (ComposedSchema) refSchema;
             if (composedSchema.getAllOf() != null) {
                 // If our discriminator is in one of the allOf schemas break when we find it
                 for  (Schema allOf: composedSchema.getAllOf()) {
-                    disc = recursiveGetDiscriminator(allOf);
-                    if (disc != null) {
-                        // empty out the map because we are returning the discriminator to a different schema
-                        disc.setMapping(new HashMap<>());
+                    foundDisc = recursiveGetDiscriminator(allOf);
+                    if (foundDisc != null) {
+                        disc.setPropertyName(foundDisc.getPropertyName());
                         return disc;
                     }
                 }
@@ -2346,15 +2349,14 @@ public class DefaultCodegen implements CodegenConfig {
                 Integer hasDiscriminatorCnt = 0;
                 Set<String> discriminatorsPropNames = new HashSet<>();
                 for  (Schema oneOf: composedSchema.getOneOf()) {
-                    disc = recursiveGetDiscriminator(oneOf);
-                    if (disc != null) {
-                        discriminatorsPropNames.add(disc.getPropertyName());
+                    foundDisc = recursiveGetDiscriminator(oneOf);
+                    if (foundDisc != null) {
+                        discriminatorsPropNames.add(foundDisc.getPropertyName());
                         hasDiscriminatorCnt++;
                     }
                 }
                 if (hasDiscriminatorCnt == composedSchema.getOneOf().size() && discriminatorsPropNames.size() == 1) {
-                    // empty out the map because we are returning the discriminator to a different schema
-                    disc.setMapping(new HashMap<>());
+                    disc.setPropertyName(foundDisc.getPropertyName());
                     return disc;
                 }
             }
@@ -2363,15 +2365,14 @@ public class DefaultCodegen implements CodegenConfig {
                 Integer hasDiscriminatorCnt = 0;
                 Set<String> discriminatorsPropNames = new HashSet<>();
                 for  (Schema anyOf: composedSchema.getAnyOf()) {
-                    disc = recursiveGetDiscriminator(anyOf);
-                    if (disc != null) {
-                        discriminatorsPropNames.add(disc.getPropertyName());
+                    foundDisc = recursiveGetDiscriminator(anyOf);
+                    if (foundDisc != null) {
+                        discriminatorsPropNames.add(foundDisc.getPropertyName());
                         hasDiscriminatorCnt++;
                     }
                 }
                 if (hasDiscriminatorCnt == composedSchema.getAnyOf().size() && discriminatorsPropNames.size() == 1) {
-                    // empty out the map because we are returning the discriminator to a different schema
-                    disc.setMapping(new HashMap<>());
+                    disc.setPropertyName(foundDisc.getPropertyName());
                     return disc;
                 }
             }
