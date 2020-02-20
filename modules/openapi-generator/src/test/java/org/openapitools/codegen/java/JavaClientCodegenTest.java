@@ -587,6 +587,60 @@ public class JavaClientCodegenTest {
     }
 
     @Test
+    public void testComposedSchemaAllOfDiscriminatorMap() {
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/allOf_composition_discriminator.yaml");
+        JavaClientCodegen codegen = new JavaClientCodegen();
+        codegen.setOpenAPI(openAPI);
+        Schema sc;
+        String modelName;
+
+        String propertyName = "petType";
+        String propertyBaseName = propertyName;
+        CodegenDiscriminator emptyMapDisc = new CodegenDiscriminator();
+        emptyMapDisc.setPropertyName(propertyName);
+        emptyMapDisc.setPropertyBaseName(propertyBaseName);
+
+        // all leaf Schemas have discriminators with PropertyName/BaseName + empty discriminator maps
+        List<String> leafModelNames = Arrays.asList("Cat", "Dog", "Lizard", "Snake");
+        for (String leafModelName: leafModelNames) {
+            Schema leafSc = openAPI.getComponents().getSchemas().get(leafModelName);
+            CodegenModel leafCm = codegen.fromModel(leafModelName, leafSc);
+            Assert.assertEquals(leafCm.discriminator, emptyMapDisc);
+        }
+
+        // the Pet discriminator map contains all animals + Reptile (children + grandchildren)
+        CodegenDiscriminator petDisc = new CodegenDiscriminator();
+        petDisc.setPropertyName(propertyName);
+        petDisc.setPropertyBaseName(propertyBaseName);
+        java.util.LinkedHashSet hs = new LinkedHashSet<>();
+        for (String leafModelName: leafModelNames) {
+            hs.add(new MappedModel(leafModelName, codegen.toModelName(leafModelName)));
+        }
+        hs.add(new MappedModel("Reptile", codegen.toModelName("Reptile")));
+        petDisc.setMappedModels(hs);
+        modelName = "Pet";
+        sc = openAPI.getComponents().getSchemas().get(modelName);
+        CodegenModel pet = codegen.fromModel(modelName, sc);
+        Assert.assertEquals(pet.discriminator, petDisc);
+
+        // the Reptile discriminator contains both reptiles
+        List<String> reptileModelNames = Arrays.asList("Lizard", "Snake");
+        CodegenDiscriminator reptileDisc = new CodegenDiscriminator();
+        reptileDisc.setPropertyName(propertyName);
+        reptileDisc.setPropertyBaseName(propertyBaseName);
+        hs.clear();
+        for (String reptileModelName: reptileModelNames) {
+            hs.add(new MappedModel(reptileModelName, codegen.toModelName(reptileModelName)));
+        }
+        reptileDisc.setMappedModels(hs);
+        modelName = "Reptile";
+        sc = openAPI.getComponents().getSchemas().get(modelName);
+        CodegenModel reptile = codegen.fromModel(modelName, sc);
+        Assert.assertEquals(reptile.discriminator, reptileDisc);
+    }
+
+
+        @Test
     public void testComposedSchemaOneOfDiscriminatorMap() {
         final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/oneoOfDiscriminator.yaml");
         JavaClientCodegen codegen = new JavaClientCodegen();
