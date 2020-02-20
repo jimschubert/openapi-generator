@@ -637,6 +637,9 @@ public class JavaClientCodegenTest {
         sc = openAPI.getComponents().getSchemas().get(modelName);
         CodegenModel reptile = codegen.fromModel(modelName, sc);
         Assert.assertEquals(reptile.discriminator, reptileDisc);
+
+        // TODO add checks of MyPets
+        // TODO add checks of MyPetsNoDisc
     }
 
 
