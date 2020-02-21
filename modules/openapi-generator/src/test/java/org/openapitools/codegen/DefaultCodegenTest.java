@@ -549,7 +549,7 @@ public class DefaultCodegenTest {
 
     @Test
     public void testDiscriminator() {
-        final OpenAPI openAPI = TestUtils.parseSpec("src/test/resources/2_0/petstore-with-fake-endpoints-models-for-testing.yaml");
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/2_0/petstore-with-fake-endpoints-models-for-testing.yaml");
         DefaultCodegen codegen = new DefaultCodegen();
 
         Schema animal = openAPI.getComponents().getSchemas().get("Animal");
@@ -584,7 +584,7 @@ public class DefaultCodegenTest {
 
     @Test
     public void testParentName() {
-        final OpenAPI openAPI = TestUtils.parseSpec("src/test/resources/3_0/allOf.yaml");
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/allOf.yaml");
         DefaultCodegen codegen = new DefaultCodegen();
 
         Schema child = openAPI.getComponents().getSchemas().get("Child");
@@ -1086,8 +1086,7 @@ public class DefaultCodegenTest {
         DefaultCodegen codegen = new DefaultCodegen();
         codegen.supportsInheritance = true;
 
-        OpenAPI openAPI = new OpenAPIParser()
-                .readLocation("src/test/resources/3_0/generic.yaml", null, new ParseOptions()).getOpenAPI();
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/generic.yaml");
         codegen.setOpenAPI(openAPI);
 
         CodegenModel codegenModel = codegen.fromModel("Dog", openAPI.getComponents().getSchemas().get("Dog"));
@@ -1116,8 +1115,7 @@ public class DefaultCodegenTest {
         codegen.supportsInheritance = true;
         codegen.setModelNamePrefix("prefix");
 
-        OpenAPI openAPI = new OpenAPIParser()
-                .readLocation("src/test/resources/3_0/generic.yaml", null, new ParseOptions()).getOpenAPI();
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/generic.yaml");
         codegen.setOpenAPI(openAPI);
 
         CodegenModel codegenModel = codegen.fromModel("Dog", openAPI.getComponents().getSchemas().get("Dog"));
@@ -1131,8 +1129,7 @@ public class DefaultCodegenTest {
         codegen.supportsInheritance = true;
         codegen.setModelNameSuffix("suffix");
 
-        OpenAPI openAPI = new OpenAPIParser()
-                .readLocation("src/test/resources/3_0/generic.yaml", null, new ParseOptions()).getOpenAPI();
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/generic.yaml");
         codegen.setOpenAPI(openAPI);
 
         CodegenModel codegenModel = codegen.fromModel("Dog", openAPI.getComponents().getSchemas().get("Dog"));
