@@ -2390,6 +2390,7 @@ public class DefaultCodegen implements CodegenConfig {
      * @param composedSchemaName The String model name of the composed schema where we are setting the discriminator map
      * @param discPropName The String that is the discriminator propertyName in the schema
      * @param c The ComposedSchema that contains the discriminator and oneOf/anyOf schemas
+     * @return the list of oneOf and anyOf schema names that need to be added to the discriminator map
      */
     protected List<String> getOneOfAnyOfSchemaNames(String composedSchemaName, String discPropName, ComposedSchema c) {
         ArrayList<List<Schema>> listOLists = new ArrayList<List<Schema>>();
