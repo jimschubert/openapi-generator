@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import org.openapitools.codegen.ClientOptInput;
 import org.openapitools.codegen.MockDefaultGenerator;
+import org.openapitools.codegen.TestUtils;
 import org.openapitools.codegen.languages.AbstractJavaJAXRSServerCodegen;
 import org.openapitools.codegen.languages.features.CXFServerFeatures;
 import org.testng.annotations.Test;
@@ -27,6 +28,7 @@ public abstract class JavaJaxrsBaseTest {
         output.deleteOnExit();
         String outputPath = output.getAbsolutePath().replace('\\', '/');
 
+        //final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/generic.yaml");
         OpenAPI openAPI = new OpenAPIParser()
                 .readLocation("src/test/resources/3_0/generic.yaml", null, new ParseOptions()).getOpenAPI();
         codegen.setOutputDir(output.getAbsolutePath());
@@ -43,9 +45,9 @@ public abstract class JavaJaxrsBaseTest {
 
         String jsonTypeInfo = "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = \"className\", visible = true)";
         String jsonSubType = "@JsonSubTypes({\n" +
-                "  @JsonSubTypes.Type(value = Dog.class, name = \"Dog\"),\n" +
-                "  @JsonSubTypes.Type(value = Cat.class, name = \"Cat\"),\n" +
                 "  @JsonSubTypes.Type(value = BigDog.class, name = \"BigDog\"),\n" +
+                "  @JsonSubTypes.Type(value = Cat.class, name = \"Cat\"),\n" +
+                "  @JsonSubTypes.Type(value = Dog.class, name = \"Dog\"),\n" +
                 "})";
         assertFileContains(generator, outputPath + "/src/gen/java/org/openapitools/model/Animal.java", jsonTypeInfo, jsonSubType);
     }
