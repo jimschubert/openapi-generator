@@ -122,11 +122,8 @@ public class TestUtils {
         }
         String file = linearize(generatedFile);
         assertNotNull(file);
-        for (String line : lines) {
-            String linearLine = linearize(line);
-            Boolean match = file.contains(linearLine);
-            assertTrue(match);
-        }
+        for (String line : lines)
+            assertTrue(file.contains(linearize(line)));
     }
 
     private static String linearize(String target) {
