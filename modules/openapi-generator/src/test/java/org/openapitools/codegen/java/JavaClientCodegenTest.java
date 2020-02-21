@@ -638,8 +638,26 @@ public class JavaClientCodegenTest {
         CodegenModel reptile = codegen.fromModel(modelName, sc);
         Assert.assertEquals(reptile.discriminator, reptileDisc);
 
-        // TODO add checks of MyPets
-        // TODO add checks of MyPetsNoDisc
+        // the MyPets discriminator contains Cat and Lizard
+        List<String> myPetNames = Arrays.asList("Cat", "Lizard");
+        CodegenDiscriminator myPetDisc = new CodegenDiscriminator();
+        myPetDisc.setPropertyName(propertyName);
+        myPetDisc.setPropertyBaseName(propertyBaseName);
+        hs.clear();
+        for (String myPetName: myPetNames) {
+            hs.add(new MappedModel(myPetName, codegen.toModelName(myPetName)));
+        }
+        myPetDisc.setMappedModels(hs);
+        modelName = "MyPets";
+        sc = openAPI.getComponents().getSchemas().get(modelName);
+        CodegenModel myPets = codegen.fromModel(modelName, sc);
+        Assert.assertEquals(myPets.discriminator, myPetDisc);
+
+        // the MyPetsNoDisc discriminator is created because all oneOf classes have the same discriminator
+        modelName = "MyPetsNoDisc";
+        sc = openAPI.getComponents().getSchemas().get(modelName);
+        CodegenModel myPetsNoDisc = codegen.fromModel(modelName, sc);
+        Assert.assertEquals(myPetsNoDisc.discriminator, myPetDisc);
     }
 
 
