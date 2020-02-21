@@ -40,6 +40,10 @@ class Cat(object):
         'declawed': 'declawed'
     }
 
+    discriminator_value_class_map = {
+        
+    }
+
     def __init__(self, declawed=None, local_vars_configuration=None):  # noqa: E501
         """Cat - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
@@ -47,7 +51,7 @@ class Cat(object):
         self.local_vars_configuration = local_vars_configuration
 
         self._declawed = None
-        self.discriminator = None
+        self.discriminator = 'class_name'
 
         if declawed is not None:
             self.declawed = declawed
@@ -72,6 +76,12 @@ class Cat(object):
         """
 
         self._declawed = declawed
+
+    def get_real_child_model(self, data):
+        """Returns the real base class specified by the discriminator"""
+        discriminator_key = self.attribute_map[self.discriminator]
+        discriminator_value = data[discriminator_key]
+        return self.discriminator_value_class_map.get(discriminator_value)
 
     def to_dict(self):
         """Returns the model properties as a dict"""

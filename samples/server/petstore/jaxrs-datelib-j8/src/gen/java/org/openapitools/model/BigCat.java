@@ -16,6 +16,8 @@ package org.openapitools.model;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -31,6 +33,9 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   BigCat.JSON_PROPERTY_KIND
+})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "className", visible = true)
+@JsonSubTypes({
 })
 
 public class BigCat extends Cat implements Serializable {

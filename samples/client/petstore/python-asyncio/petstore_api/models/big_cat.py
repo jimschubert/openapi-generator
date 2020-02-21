@@ -40,6 +40,10 @@ class BigCat(object):
         'kind': 'kind'
     }
 
+    discriminator_value_class_map = {
+        
+    }
+
     def __init__(self, kind=None, local_vars_configuration=None):  # noqa: E501
         """BigCat - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
@@ -47,7 +51,7 @@ class BigCat(object):
         self.local_vars_configuration = local_vars_configuration
 
         self._kind = None
-        self.discriminator = None
+        self.discriminator = 'class_name'
 
         if kind is not None:
             self.kind = kind
@@ -78,6 +82,12 @@ class BigCat(object):
             )
 
         self._kind = kind
+
+    def get_real_child_model(self, data):
+        """Returns the real base class specified by the discriminator"""
+        discriminator_key = self.attribute_map[self.discriminator]
+        discriminator_value = data[discriminator_key]
+        return self.discriminator_value_class_map.get(discriminator_value)
 
     def to_dict(self):
         """Returns the model properties as a dict"""

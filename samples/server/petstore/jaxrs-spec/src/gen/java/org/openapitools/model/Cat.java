@@ -1,5 +1,7 @@
 package org.openapitools.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.openapitools.model.Animal;
@@ -14,6 +16,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "className", visible = true)
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = BigCat.class, name = "BigCat"),
+})
 
 
 public class Cat extends Animal implements Serializable {

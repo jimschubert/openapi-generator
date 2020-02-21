@@ -40,7 +40,7 @@ use \OpenAPI\Client\ObjectSerializer;
  */
 class Dog extends Animal 
 {
-    const DISCRIMINATOR = null;
+    const DISCRIMINATOR = 'class_name';
 
     /**
       * The original name of the model.
@@ -172,6 +172,9 @@ class Dog extends Animal
         parent::__construct($data);
 
         $this->container['breed'] = isset($data['breed']) ? $data['breed'] : null;
+
+        // Initialize discriminator property with the model name.
+        $this->container['class_name'] = static::$openAPIModelName;
     }
 
     /**

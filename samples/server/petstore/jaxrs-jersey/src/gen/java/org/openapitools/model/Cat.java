@@ -16,6 +16,8 @@ package org.openapitools.model;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.openapitools.model.Animal;
@@ -29,6 +31,9 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   Cat.JSON_PROPERTY_DECLAWED
+})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "className", visible = true)
+@JsonSubTypes({
 })
 
 public class Cat extends Animal  {

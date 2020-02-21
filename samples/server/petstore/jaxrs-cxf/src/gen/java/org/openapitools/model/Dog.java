@@ -1,5 +1,7 @@
 package org.openapitools.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.openapitools.model.Animal;
 import org.openapitools.model.DogAllOf;
 import javax.validation.constraints.*;
@@ -15,6 +17,9 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "className", visible = true)
+@JsonSubTypes({
+})
 public class Dog extends Animal {
   
   @ApiModelProperty(value = "")

@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using JsonSubTypes;
 using System.ComponentModel.DataAnnotations;
 using OpenAPIDateConverter = Org.OpenAPITools.Client.OpenAPIDateConverter;
 
@@ -28,6 +29,7 @@ namespace Org.OpenAPITools.Model
     /// Dog
     /// </summary>
     [DataContract]
+    [JsonConverter(typeof(JsonSubtypes), "ClassName")]
     public partial class Dog : Animal,  IEquatable<Dog>, IValidatableObject
     {
         /// <summary>

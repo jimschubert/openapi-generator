@@ -2,6 +2,8 @@ package apimodels;
 
 import apimodels.Animal;
 import apimodels.DogAllOf;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.*;
 import java.util.Set;
 import javax.validation.*;

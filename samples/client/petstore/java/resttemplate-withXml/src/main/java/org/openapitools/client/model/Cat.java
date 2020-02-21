@@ -18,6 +18,8 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,6 +34,11 @@ import javax.xml.bind.annotation.*;
  */
 @JsonPropertyOrder({
   Cat.JSON_PROPERTY_DECLAWED
+})
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "className", visible = true)
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = BigCat.class, name = "BigCat"),
 })
 
 @XmlRootElement(name = "Cat")
