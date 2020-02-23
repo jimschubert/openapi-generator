@@ -2081,8 +2081,7 @@ definitions:
     type: object
     allOf:
     - $ref: '#/definitions/GrandparentAnimal'
-    - type: object
-      discriminator: pet_type
+    discriminator: pet_type
   ChildCat:
     allOf:
     - $ref: '#/definitions/ParentPet'
