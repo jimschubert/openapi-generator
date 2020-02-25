@@ -2191,6 +2191,7 @@ public class DefaultCodegen implements CodegenConfig {
                 required.addAll(composed.getRequired());
                 allRequired.addAll(composed.getRequired());
             }
+
             addVars(m, unaliasPropertySchema(properties), required, unaliasPropertySchema(allProperties), allRequired);
 
             // end of code block for composed schema
@@ -2250,6 +2251,22 @@ public class DefaultCodegen implements CodegenConfig {
         if (m.vars != null) {
             for (CodegenProperty prop : m.vars) {
                 postProcessModelProperty(m, prop);
+            }
+        }
+
+        // set isDiscriminator on the discriminator property
+        if (m.discriminator != null) {
+            String discPropName = m.discriminator.getPropertyBaseName();
+            List<List<CodegenProperty>> listOLists = new ArrayList<List<CodegenProperty>>();
+            listOLists.add(m.requiredVars);
+            listOLists.add(m.vars);
+            listOLists.add(m.allVars);
+            for (List<CodegenProperty> theseVars: listOLists) {
+                for (CodegenProperty requiredVar: theseVars) {
+                    if (discPropName.equals(requiredVar.baseName)) {
+                        requiredVar.isDiscriminator = true;
+                    }
+                }
             }
         }
 
