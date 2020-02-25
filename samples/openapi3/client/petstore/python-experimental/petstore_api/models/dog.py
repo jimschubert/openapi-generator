@@ -90,10 +90,11 @@ class Dog(ModelComposed):
 
     @staticmethod
     def discriminator():
-        return {
-            'class_name': {
-            },
+        val = {
         }
+        if not val:
+            return None
+        return {'class_name': val}
 
     attribute_map = {
         'class_name': 'className',  # noqa: E501
