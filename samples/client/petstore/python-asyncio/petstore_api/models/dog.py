@@ -41,7 +41,6 @@ class Dog(object):
     }
 
     discriminator_value_class_map = {
-        
     }
 
     def __init__(self, breed=None, local_vars_configuration=None):  # noqa: E501

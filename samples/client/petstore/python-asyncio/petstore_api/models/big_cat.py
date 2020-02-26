@@ -41,7 +41,6 @@ class BigCat(object):
     }
 
     discriminator_value_class_map = {
-        
     }
 
     def __init__(self, kind=None, local_vars_configuration=None):  # noqa: E501

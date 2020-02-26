@@ -41,7 +41,6 @@ class Cat(object):
     }
 
     discriminator_value_class_map = {
-        
     }
 
     def __init__(self, declawed=None, local_vars_configuration=None):  # noqa: E501
