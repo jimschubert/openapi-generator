@@ -28,10 +28,26 @@ import java.util.stream.Collectors;
 
 public class TestUtils {
 
+    /**
+     * Helper method for parsing specs into an intermediary OpenAPI structure for pre-processing.
+     *
+     * Use this method only for tests targeting processing helpers such as {@link org.openapitools.codegen.utils.ModelUtils}
+     * or {@link InlineModelResolver}. Using this for testing generators will mean you're not testing the OpenAPI document
+     * in a state the generator will be presented at runtime.
+     *
+     * @param specFilePath The path to the specification file
+     * @return A "raw" OpenAPI document
+     */
     public static OpenAPI parseSpec(String specFilePath) {
         return new OpenAPIParser().readLocation(specFilePath, null, new ParseOptions()).getOpenAPI();
     }
 
+    /**
+     * Helper method for parsing specs as a generator would be presented at runtime (inline models resolved, flattened).
+     *
+     * @param specFilePath The path to the specification file
+     * @return A processed OpenAPI document
+     */
     public static OpenAPI parseFlattenSpec(String specFilePath) {
         OpenAPI openAPI = new OpenAPIParser().readLocation(specFilePath, null, new ParseOptions()).getOpenAPI();
         // resolve inline models
@@ -41,7 +57,7 @@ public class TestUtils {
     }
 
     public static OpenAPI parseContent(String jsonOrYaml) {
-        return new OpenAPIParser().readContents(jsonOrYaml, null, null).getOpenAPI();
+        return new OpenAPIParser().readContents(jsonOrYaml, null, new ParseOptions()).getOpenAPI();
     }
 
     public static OpenAPI createOpenAPI() {
