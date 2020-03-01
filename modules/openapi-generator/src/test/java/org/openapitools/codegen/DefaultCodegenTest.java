@@ -605,6 +605,77 @@ public class DefaultCodegenTest {
     }
 
     @Test
+    public void testComposedSchemaOneOfDiscriminatorMap() {
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/allOf_composition_discriminator.yaml");
+
+        DefaultCodegen codegen = new DefaultCodegen();
+        codegen.setOpenAPI(openAPI);
+
+        String path = "/mypets";
+
+        Operation operation = openAPI.getPaths().get(path).getGet();
+        CodegenOperation codegenOperation = codegen.fromOperation(path, "GET", operation, null);
+        verifyMyPetsDiscriminator(codegenOperation.discriminator);
+
+        Schema pet = openAPI.getComponents().getSchemas().get("MyPets");
+        CodegenModel petModel = codegen.fromModel("MyPets", pet);
+        verifyMyPetsDiscriminator(petModel.discriminator);
+    }
+
+    @Test
+    public void testComposedSchemaAllOfHierarchy(){
+        final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/3_0/allOf_composition_discriminator.yaml");
+
+        DefaultCodegen codegen = new DefaultCodegen();
+        codegen.setOpenAPI(openAPI);
+
+        Schema pet = openAPI.getComponents().getSchemas().get("Lizard");
+        CodegenModel petModel = codegen.fromModel("Lizard", pet);
+        verifyLizardDiscriminator(petModel.discriminator);
+
+        pet = openAPI.getComponents().getSchemas().get("Reptile");
+        petModel = codegen.fromModel("Reptile", pet);
+        verifyReptileDiscriminator(petModel.discriminator);
+    }
+
+    private void verifyLizardDiscriminator(CodegenDiscriminator discriminator) {
+        CodegenDiscriminator test = new CodegenDiscriminator();
+        String prop = "petType";
+        test.setPropertyName(prop);
+        test.setPropertyBaseName(prop);
+        test.setMapping(null);
+        test.setMappedModels(new HashSet<>());
+        assertEquals(discriminator, test);
+    }
+
+    private void verifyReptileDiscriminator(CodegenDiscriminator discriminator) {
+        CodegenDiscriminator test = new CodegenDiscriminator();
+        String prop = "petType";
+        test.setPropertyName(prop);
+        test.setPropertyBaseName(prop);
+        test.setMapping(null);
+        test.setMappedModels(new HashSet<CodegenDiscriminator.MappedModel>(){{
+            add(new CodegenDiscriminator.MappedModel("Snake", "Snake"));
+            add(new CodegenDiscriminator.MappedModel("Lizard", "Lizard"));
+        }});
+        assertEquals(discriminator, test);
+    }
+
+    private void verifyMyPetsDiscriminator(CodegenDiscriminator discriminator) {
+        CodegenDiscriminator test = new CodegenDiscriminator();
+        String prop = "petType";
+        test.setPropertyName(prop);
+        test.setPropertyBaseName(prop);
+        test.setMapping(null);
+        test.setMappedModels(new HashSet<CodegenDiscriminator.MappedModel>(){{
+            add(new CodegenDiscriminator.MappedModel("Cat", "Cat"));
+            add(new CodegenDiscriminator.MappedModel("Lizard", "Lizard"));
+        }});
+        assertEquals(discriminator, test);
+    }
+
+
+    @Test
     public void testAllOfSingleRefNoOwnProps() {
         final OpenAPI openAPI = TestUtils.parseFlattenSpec("src/test/resources/2_0/composed-allof.yaml");
         final DefaultCodegen codegen = new CodegenWithMultipleInheritance();
