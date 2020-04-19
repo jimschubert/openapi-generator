@@ -108,11 +108,8 @@ public class CodegenDiscriminator {
         private String modelName;
 
         public MappedModel(String mappingName, String modelName) {
-            if (mappingName == null) {
-                throw new RuntimeException("Discriminator mapping name cannot be null for model '" + modelName + "'");
-            }
-            this.mappingName = mappingName;
-            this.modelName = modelName;
+            this.mappingName = Objects.requireNonNull(mappingName, "mappingName must not be null");
+            this.modelName = Objects.requireNonNull(modelName, "modelName must not be null");
         }
 
         @Override
@@ -134,7 +131,7 @@ public class CodegenDiscriminator {
         }
 
         public void setMappingName(String mappingName) {
-            this.mappingName = mappingName;
+            this.mappingName = Objects.requireNonNull(mappingName, "mappingName must not be null");
         }
 
         public String getModelName() {
@@ -142,7 +139,7 @@ public class CodegenDiscriminator {
         }
 
         public void setModelName(String modelName) {
-            this.modelName = modelName;
+            this.modelName = Objects.requireNonNull(modelName, "modelName must not be null");
         }
 
         @Override
