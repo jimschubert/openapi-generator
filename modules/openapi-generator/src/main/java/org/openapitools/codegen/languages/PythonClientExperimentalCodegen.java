@@ -17,16 +17,13 @@
 package org.openapitools.codegen.languages;
 
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.examples.ExampleGenerator;
@@ -107,12 +104,12 @@ public class PythonClientExperimentalCodegen extends PythonClientCodegen {
         generatorMetadata = GeneratorMetadata.newBuilder(generatorMetadata)
                 .stability(Stability.EXPERIMENTAL)
                 .build();
+
+        this.setLegacyDiscriminatorBehavior(false);
     }
 
     @Override
     public void processOpts() {
-        this.setDiscriminatorExplicitMappingVerbose(true);
-
         super.processOpts();
 
         supportingFiles.remove(new SupportingFile("api_client.mustache", packagePath(), "api_client.py"));

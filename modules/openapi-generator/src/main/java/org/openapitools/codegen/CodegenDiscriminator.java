@@ -114,17 +114,8 @@ public class CodegenDiscriminator {
 
         @Override
         public int compareTo(MappedModel other) {
-            if (other == null) {
-                throw new NullPointerException("other");
-            }
-
-            String mappingName = getMappingName();
-            if (mappingName != null) {
                 return getMappingName().compareTo(other.getMappingName());
             }
-
-            return other.getMappingName() == null ? 0 : -1;
-        }
 
         public String getMappingName() {
             return mappingName;

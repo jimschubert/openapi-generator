@@ -290,4 +290,8 @@ public interface CodegenConfig {
     boolean isRemoveEnumValuePrefix();
 
     void setRemoveEnumValuePrefix(boolean removeEnumValuePrefix);
+
+    Boolean getLegacyDiscriminatorBehavior();
+
+    void setLegacyDiscriminatorBehavior(boolean val);
 }

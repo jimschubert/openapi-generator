@@ -45,6 +45,8 @@ public class GoClientExperimentalCodegen extends GoClientCodegen {
         usesOptionals = false;
         useOneOfInterfaces = true;
 
+        this.setLegacyDiscriminatorBehavior(false);
+
         generatorMetadata = GeneratorMetadata.newBuilder(generatorMetadata).stability(Stability.EXPERIMENTAL).build();
     }
 
@@ -77,7 +79,6 @@ public class GoClientExperimentalCodegen extends GoClientCodegen {
 
     @Override
     public void processOpts() {
-        this.setDiscriminatorExplicitMappingVerbose(true);
         super.processOpts();
         supportingFiles.add(new SupportingFile("utils.mustache", "", "utils.go"));
 

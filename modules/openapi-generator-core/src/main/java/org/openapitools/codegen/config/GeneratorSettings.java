@@ -62,6 +62,8 @@ public final class GeneratorSettings implements Serializable {
     private String releaseNote;
     private String httpUserAgent;
 
+    private Boolean legacyDiscriminatorBehavior;
+
     /**
      * Gets the name of the generator to use.
      *
@@ -333,6 +335,18 @@ public final class GeneratorSettings implements Serializable {
         return httpUserAgent;
     }
 
+    /**
+     * Gets whether the generator will be executed with the legacy discriminator mapping behavior.
+     *
+     * "Legacy" here means the OpenAPI 2.0 behavior which when applied to OpenAPI 3.x may be incorrect or incomplete.
+     * This option allows for backward compatibility in custom generators which may have implemented this functionality.
+     *
+     * @return True if original/legacy behavior, False if targeting OpenAPI 3.x+ behavior
+     */
+    public Boolean getLegacyDiscriminatorBehavior() {
+        return legacyDiscriminatorBehavior;
+    }
+
     private GeneratorSettings(Builder builder) {
         setDefaults();
 
@@ -359,6 +373,8 @@ public final class GeneratorSettings implements Serializable {
         gitRepoId = builder.gitRepoId;
         releaseNote = builder.releaseNote;
         httpUserAgent = builder.httpUserAgent;
+
+        this.legacyDiscriminatorBehavior = builder.isLegacyDiscriminatorBehavior;
 
         Map<String, Object> additional = new HashMap<>(builder.additionalProperties);
 
@@ -431,6 +447,7 @@ public final class GeneratorSettings implements Serializable {
         gitUserId = DEFAULT_GIT_USER_ID;
         gitRepoId = DEFAULT_GIT_REPO_ID;
         releaseNote = DEFAULT_RELEASE_NOTE;
+        legacyDiscriminatorBehavior = false;
     }
 
     private boolean isNotEmpty(String value) {
@@ -486,6 +503,7 @@ public final class GeneratorSettings implements Serializable {
         builder.gitRepoId = copy.getGitRepoId();
         builder.releaseNote = copy.getReleaseNote();
         builder.httpUserAgent = copy.getHttpUserAgent();
+        builder.isLegacyDiscriminatorBehavior = copy.getLegacyDiscriminatorBehavior();
 
         return builder;
     }
@@ -519,6 +537,7 @@ public final class GeneratorSettings implements Serializable {
         private String gitRepoId;
         private String releaseNote;
         private String httpUserAgent;
+        private Boolean isLegacyDiscriminatorBehavior;
 
         /**
          * Instantiates a new Builder.
@@ -893,6 +912,19 @@ public final class GeneratorSettings implements Serializable {
         }
 
         /**
+         * Sets whether the generator will be executed with the legacy discriminator mapping behavior.
+         *
+         * "Legacy" here means the OpenAPI 2.0 behavior which when applied to OpenAPI 3.x may be incorrect or incomplete.
+         * This option allows for backward compatibility in custom generators which may have implemented this functionality.
+         *
+         * @return a reference to this Builder
+         */
+        public Builder withLegacyDiscriminatorBehavior(Boolean legacyDiscriminatorBehavior) {
+            this.isLegacyDiscriminatorBehavior = legacyDiscriminatorBehavior;
+            return this;
+        }
+
+        /**
          * Returns a {@code GeneratorSettings} built from the parameters previously set.
          *
          * @return a {@code GeneratorSettings} built with parameters of this {@code GeneratorSettings.Builder}
@@ -931,6 +963,7 @@ public final class GeneratorSettings implements Serializable {
                 ", gitRepoId='" + gitRepoId + '\'' +
                 ", releaseNote='" + releaseNote + '\'' +
                 ", httpUserAgent='" + httpUserAgent + '\'' +
+                ", isLegacyDiscriminatorBehavior='" + legacyDiscriminatorBehavior + '\'' +
                 '}';
     }
 
@@ -961,7 +994,8 @@ public final class GeneratorSettings implements Serializable {
                 Objects.equals(getGitUserId(), that.getGitUserId()) &&
                 Objects.equals(getGitRepoId(), that.getGitRepoId()) &&
                 Objects.equals(getReleaseNote(), that.getReleaseNote()) &&
-                Objects.equals(getHttpUserAgent(), that.getHttpUserAgent());
+                Objects.equals(getHttpUserAgent(), that.getHttpUserAgent()) &&
+                Objects.equals(getLegacyDiscriminatorBehavior(), that.getLegacyDiscriminatorBehavior());
     }
 
     @Override
@@ -989,7 +1023,8 @@ public final class GeneratorSettings implements Serializable {
                 getGitUserId(),
                 getGitRepoId(),
                 getReleaseNote(),
-                getHttpUserAgent()
+                getHttpUserAgent(),
+                getLegacyDiscriminatorBehavior()
         );
     }
 }

@@ -245,6 +245,11 @@ public class CodegenConfigurator {
         return this;
     }
 
+    public CodegenConfigurator setLegacyDiscriminatorBehavior(boolean legacyDiscriminatorBehavior) {
+        generatorSettingsBuilder.withLegacyDiscriminatorBehavior(legacyDiscriminatorBehavior);
+        return this;
+    }
+
     /**
      * Sets the name of the target generator.
      * <p>
@@ -531,6 +536,11 @@ public class CodegenConfigurator {
         config.languageSpecificPrimitives().addAll(generatorSettings.getLanguageSpecificPrimitives());
         config.reservedWordsMappings().putAll(generatorSettings.getReservedWordMappings());
         config.additionalProperties().putAll(generatorSettings.getAdditionalProperties());
+        Boolean legacyDiscriminatorBehavior = generatorSettings.getLegacyDiscriminatorBehavior();
+        // only modify this option if the use has specified it.
+        if (legacyDiscriminatorBehavior != null) {
+            config.setLegacyDiscriminatorBehavior(legacyDiscriminatorBehavior);
+        }
 
         Map<String, String> serverVariables = generatorSettings.getServerVariables();
         if (!serverVariables.isEmpty()) {
