@@ -17,10 +17,8 @@
 File readme = new File(basedir, "out/README.md")
 
 assert readme.isFile()
-if (File.separator == "/") {
-    // For whatever reason, resource path templates fail in this test in Windows
-    assert readme.text.contains("# OpenAPI Petstore Bash client")
-}
+// For whatever reason, resource path templates fail in this test in Windows
+assert readme.text.contains("# OpenAPI Petstore Bash client")
 
 File gradle = new File(basedir, "out/build.gradle")
 assert gradle.isFile()
